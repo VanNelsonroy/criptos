@@ -1,0 +1,11 @@
+import React from 'react'
+
+const Formulario = () => {
+  return (
+    <form>
+      <input type='submit' value='Cotizar' />
+    </form>
+  )
+}
+
+export default Formulario
