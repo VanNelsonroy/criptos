@@ -1,7 +1,8 @@
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import styled from '@emotion/styled'
 import imgCripto from './img/imagen-criptos.png'
 import Formulario from "./components/Formulario"
+import Resultado from "./components/Resultado"
 
 const Contenedor = styled.div`
   max-width: 900px;
@@ -41,6 +42,26 @@ const Heading = styled.h1 `
 `
 
 function App() {
+  const [monedas, setMonedas] = useState({})
+  const [resultado, setResultado] = useState({})
+  const [cargando, setCargando] = useState(false)
+
+  useEffect(() => {
+    if(Object.keys(monedas).length > 0){
+      const cotizarCripto = async () => {
+        setCargando(true)
+        const { moneda, criptoMoneda } = monedas
+        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptoMoneda}&tsyms=${moneda}`
+        const respuesta = await fetch(url)
+        const resultado = await respuesta.json()
+
+        setResultado(resultado.DISPLAY[criptoMoneda][moneda])
+        setCargando(false)
+      }
+
+      cotizarCripto()
+    }
+  }, [monedas])
 
   return (
     <div className="App">
@@ -48,7 +69,10 @@ function App() {
         <Imagen src={imgCripto} alt="Imagen criptomonedas" />
         <div>
           <Heading>Cotiza criptomonedas al instante</Heading>
-          <Formulario />
+          <Formulario
+          setMonedas={setMonedas} />
+          {cargando && <p>Cargando...</p>}
+          {resultado.PRICE && <Resultado resultado={resultado} /> }
         </div>
       </Contenedor>
     </div>
